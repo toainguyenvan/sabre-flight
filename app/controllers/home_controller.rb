@@ -14,7 +14,7 @@ class HomeController < ApplicationController
 		current_user.token = ''
 		current_user.save
 		session[:current_user_id] = ''
-		render :new
+		redirect_to sign_in_path
 	end	
 
 	def sign_in
@@ -48,8 +48,12 @@ class HomeController < ApplicationController
   private
 
   def authenticate_user
-  	p current_user
-  	redirect_to flight_search_path if current_user
+  	if current_user
+  		redirect_to flight_search_path
+  	else
+  		render :new
+  	end
+  	
   end
 
   def validate_token!
