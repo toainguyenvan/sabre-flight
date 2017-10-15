@@ -1,0 +1,137 @@
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">SABRE FLIGHT SEARCH</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/sign_out"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
+    </ul>
+  </div>
+</nav>
+
+<form id="formSearch" method="POST" action="/flight_search"> 
+  <div class="container">
+      <div class='col-xs-3'>
+          <div class="form-group">
+              <label for="inputsm">From</label>
+              <div class='input-group'>
+                  <input type='text' name="from" class="form-control" placeholder="Ex: JFK" value="<%=@from if @from.presence%>"/>
+              </div>
+          </div>
+      </div>
+      <div class='col-xs-3'>
+          <div class="form-group">
+              <label for="inputsm">To</label>
+              <div class='input-group'>
+                  <input type='text' name="to" class="form-control" placeholder="Ex: LAX" value="<%=@to if @to.presence%>"/>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="container">
+      <div class='col-xs-3'>
+          <div class="form-group">
+              <label for="inputsm">Departure Date</label>
+              <div class='input-group date' id='datetimepicker1'>
+                  <input type='text' class="form-control" placeholder="Format: YYYY/MM/DD" value="<%=@from_date if @from_date.presence%>"/>
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+              </div>
+          </div>
+      </div>
+      <div class='col-xs-3'>
+          <div class="form-group">
+              <label for="inputsm">Return Date</label>
+              <div class='input-group date' id='datetimepicker2'>
+                  <input type='text' class="form-control" placeholder="Format: YYYY/MM/DD" value="<%=@to_date if @to_date.presence%>"/>
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+              </div>
+          </div>
+      </div>
+      
+  </div>
+  <div class="container">
+    <div class='col-xs-3'>
+        <div class="form-group">
+          <button class="btn btn-primary" id="search" type="button">SEARCH</button>
+        </div>
+    </div>
+  </div>
+  <input type="hidden" id='from-date' name="from_date"/>
+  <input type="hidden" id='to-date' name="to_date"/>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Flight Number</th>
+      <th>Code</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Total Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <% if @mapped_data.presence%>
+      <% index = 0%>
+      <% @mapped_data.each do |flight|%>
+        <%index = index + 1 %>
+        <tr>
+          <td><%= index%></td>
+          <td><%= flight.segment_1.number%></td>
+          <td><%= flight.segment_1.code%></td>
+          <td><%= flight.segment_1.departure_date%></td>
+          <td><%= flight.segment_1.arrival_date%></td>
+          <td><%= flight.total_price%></td>
+        </tr>
+      <% end %>
+    <%else%>
+      <tr>
+        <td colspan="6"><div class="span12 text-center">No Flight Available</div> </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<script type="text/javascript">
+    $('#search').on('click', function(){
+      // var from = $("#datetimepicker1").data('date').split("-");
+      // var to = $("#datetimepicker2").data('date').split("-");
+      
+      // var f = new Date(from[0], from[1] - 1, from[2]);
+      // var t = new Date(to[0], to[1] - 1, to[2]);
+      // console.log(f);
+      // console.log(t);
+
+      $('#from-date').val($("#datetimepicker1").data('date'));
+      $('#to-date').val($("#datetimepicker2").data('date'));
+
+      $('#formSearch').submit();
+
+    });
+
+    $(function () {
+        $('#datetimepicker1').datetimepicker({
+          format: 'YYYY-MM-DD'
+        });
+        $('#datetimepicker2').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'YYYY-MM-DD'
+        });
+        $("#datetimepicker1").on("dp.change", function (e) {
+            $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
+        });
+        $("#datetimepicker2").on("dp.change", function (e) {
+            $('#datetimepicker1').data("DateTimePicker").maxDate(e.date);
+        });
+    });
+</script>
